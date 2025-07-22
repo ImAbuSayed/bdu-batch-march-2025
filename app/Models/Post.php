@@ -8,14 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
+    
+    // This model represents a blog post in the application.
 
-    /**
-     * The attributes that are mass assignable.
-     * This protects against mass-assignment vulnerabilities. Only these fields can be filled using create() or update().
-     * @var array
-     */
     protected $fillable = [
         'title',
         'body',
     ];
+
 }

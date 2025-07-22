@@ -14,18 +14,14 @@ class AiPostController extends Controller
      */
     protected $client;
 
-    /**
-     * Constructor to initialize the OpenAI client.
-     */
+    //Constructor to initialize the OpenAI client.
     public function __construct()
     {
         // Initialize the OpenAI client with the API key from the .env file.
         $this->client = OpenAI::client(env('OPENAI_API_KEY'));
     }
 
-    /**
-     * Display the main view with all posts.
-     */
+    // Display the main view with all posts.
     public function index()
     {
         $posts = Post::latest()->get();
@@ -40,8 +36,8 @@ class AiPostController extends Controller
         $request->validate(['prompt' => 'required|string|max:500']);
 
         // This prompt now instructs the AI to extract a 'topic' for the 'create' action.
-        $systemPrompt = "You are a helpful assistant that processes user requests for a blog post management system. Your only output must be a single, valid JSON object. Do not include any other text, explanations, or markdown. Based on the user's prompt, determine the action and extract the necessary data.
-        - For 'create', extract the blog post 'topic'. The JSON format is: {\"action\": \"create\", \"data\": {\"topic\": \"the blog topic\"}}.
+        $systemPrompt = "You are a helpful assistant that processes user requests for article management system. Your only output must be a single, valid JSON object. Do not include any other text, explanations, or markdown. Based on the user's prompt, determine the action and extract the necessary data.
+        - For 'create', extract the article 'topic'. The JSON format is: {\"action\": \"create\", \"data\": {\"topic\": \"the blog topic\"}}.
         - For 'edit', identify the post 'id' and the fields to change. The JSON format is: {\"action\": \"edit\", \"data\": {\"id\": 1, \"title\": \"new title\", \"body\": \"new body\"}}.
         - For 'delete', identify the post 'id'. The JSON format is: {\"action\": \"delete\", \"data\": {\"id\": 2}}.
         ";
@@ -127,7 +123,7 @@ class AiPostController extends Controller
     }
 
     /**
-     * Handles updating an existing post. (No changes needed here)
+     * Handles updating an existing post. (No changes needed here) 
      */
     private function handleUpdate(array $data): string
     {
