@@ -25,7 +25,7 @@ This is the standard way to interact with Git.
 
 **1. Clone the Repository** This command downloads the project to your computer.
 ```bash
-git clone [https://github.com/ImAbuSayed/bdu-batch-march-2025/](https://github.com/ImAbuSayed/bdu-batch-march-2025/)
+git clone https://github.com/ImAbuSayed/bdu-batch-march-2025/
 ```
 
 **2. Create Your Personal Branch** Navigate into the project directory and create a new branch. **Using your own name makes it easy to identify your work.**
