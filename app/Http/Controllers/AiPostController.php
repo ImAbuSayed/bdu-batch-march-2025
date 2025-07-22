@@ -103,7 +103,7 @@ class AiPostController extends Controller
         $topic = $data['topic'];
 
         // This prompt asks the AI to act as a blog writer.
-        $writerPrompt = "You are a skilled blog writer. Write a high-quality, engaging blog post on the following topic. Your response must be a single, valid JSON object with two keys: 'title' and 'body'. The 'body' should be well-structured, possibly with multiple paragraphs.";
+        $writerPrompt = "You are an AI-based article generator. Generate a high-quality, informative article on the following topic. Your response must be a single, valid JSON object with two keys: 'title' and 'body'. The 'body' should be clear, well-organized, and may contain multiple paragraphs for readability.";
 
         // Make the second API call to generate the actual blog content.
         $contentResult = $this->client->chat()->create([
