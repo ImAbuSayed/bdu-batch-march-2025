@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Creates the 'posts' table with title and body fields.
         Schema::create('posts', function (Blueprint $table) {
             $table->id(); // Primary Key
-            $table->string('title'); // For the post title
-            $table->text('body'); // For the post content
+            $table->string('title'); // Post title
+            $table->text('body'); // Post content
+            $table->string('image')->nullable(); // Post image URL (new)
             $table->timestamps(); // created_at and updated_at
         });
     }

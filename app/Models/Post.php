@@ -14,8 +14,11 @@ class Post extends Model
      * This protects against mass-assignment vulnerabilities. Only these fields can be filled using create() or update().
      * @var array
      */
+
     protected $fillable = [
-        'title',
-        'body',
-    ];
+    'title',
+    'body',
+    'image',
+];
+
 }
