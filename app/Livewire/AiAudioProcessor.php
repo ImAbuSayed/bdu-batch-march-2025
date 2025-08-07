@@ -41,27 +41,73 @@ class AiAudioProcessor extends Component
         $this->errorMessage = null;
 
         try {
-            $client = OpenAI::client(env('OPENAI_API_KEY'));
+            // Validate OpenAI API key
+            $apiKey = env('OPENAI_API_KEY');
+            if (empty($apiKey)) {
+                throw new Exception('OpenAI API key is not configured.');
+            }
+
+            $client = OpenAI::client($apiKey);
 
             // Call the OpenAI Audio API for text-to-speech
             $response = $client->audio()->speech([
                 'model' => 'tts-1',
                 'input' => $this->textToSpeechInput,
-                'voice' => 'alloy', // You can choose from 'alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'
+                'voice' => 'alloy',
+                'response_format' => 'mp3',
             ]);
 
-            // Generate a unique filename and save the audio content
-            $fileName = 'audio/' . Str::random(40) . '.mp3';
-            Storage::disk('public')->put($fileName, $response);
+            // Create audio directory if it doesn't exist
+            $directory = 'audio';
+            if (!Storage::disk('public')->exists($directory)) {
+                Storage::disk('public')->makeDirectory($directory);
+            }
 
+            // Generate a unique filename and save the audio content
+            $fileName = $directory . '/' . Str::random(40) . '.mp3';
+            $filePath = Storage::disk('public')->path($fileName);
             
+            // Save the audio content
+            $audioContent = $response->__toString();
+            if (empty($audioContent)) {
+                throw new Exception('Received empty audio content from API');
+            }
+            
+            $bytesWritten = Storage::disk('public')->put($fileName, $audioContent);
+            
+            if ($bytesWritten === false) {
+                throw new Exception('Failed to save audio file to storage');
+            }
+
+            // Verify the file was written
+            if (!Storage::disk('public')->exists($fileName)) {
+                throw new Exception('Audio file was not saved correctly');
+            }
 
             // Set the public URL for the generated audio file
             $this->generatedAudioUrl = Storage::url($fileName);
+            
+            // Log successful generation
+            \Log::info('Audio generated successfully', [
+                'file' => $fileName,
+                'size' => Storage::disk('public')->size($fileName),
+                'url' => $this->generatedAudioUrl
+            ]);
 
-        } catch (Exception $e) {
-            // Set an error message if the API call fails
-            $this->errorMessage = 'Text-to-Speech generation failed: ' . $e->getMessage();
+        } catch (\Exception $e) {
+            // Log the full error for debugging
+            \Log::error('Text-to-Speech generation failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Set a user-friendly error message
+            $this->errorMessage = 'Failed to generate audio. ' . $e->getMessage();
+            if (str_contains($e->getMessage(), 'cURL error 28')) {
+                $this->errorMessage = 'Request timed out. Please try again.';
+            } elseif (str_contains($e->getMessage(), '401')) {
+                $this->errorMessage = 'Authentication failed. Please check your OpenAI API key.';
+            }
         } finally {
             // Ensure the processing flag is reset
             $this->processingTTS = false;
